@@ -6,21 +6,11 @@ public class QuantityLength {
 	private final LengthUnit unit;
 
 	public QuantityLength(double value, LengthUnit unit) {
-
 		if (unit == null) {
 			throw new IllegalArgumentException("Unit cannot be null");
 		}
-
 		this.value = value;
 		this.unit = unit;
-	}
-
-	public double getValue() {
-		return value;
-	}
-
-	public LengthUnit getUnit() {
-		return unit;
 	}
 
 	private double convertToBase() {
