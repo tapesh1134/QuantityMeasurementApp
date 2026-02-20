@@ -4,6 +4,7 @@ public class QuantityLength {
 
 	private final double value;
 	private final LengthUnit unit;
+	private final double EPSILON = 1e-6;
 
 	public QuantityLength(double value, LengthUnit unit) {
 		if (unit == null) {
@@ -17,6 +18,18 @@ public class QuantityLength {
 		return unit.toFeet(value);
 	}
 
+	public static double convert(double value, LengthUnit fromLengthUnit, LengthUnit toLengthUnit) {
+		if (fromLengthUnit == null || toLengthUnit == null) {
+			throw new IllegalArgumentException("Unit connet be null");
+		}
+
+		if (Double.isNaN(value) || Double.isInfinite(value)) {
+			throw new IllegalArgumentException("Value must be finite number");
+		}
+
+		return value * (fromLengthUnit.getConversionFactor() / toLengthUnit.getConversionFactor());
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 
@@ -28,7 +41,7 @@ public class QuantityLength {
 			return false;
 		QuantityLength other = (QuantityLength) obj;
 
-		return Double.compare(this.convertToBase(), other.convertToBase()) == 0;
+		return Math.abs(this.convertToBase() - other.convertToBase()) < EPSILON;
 	}
 
 	@Override

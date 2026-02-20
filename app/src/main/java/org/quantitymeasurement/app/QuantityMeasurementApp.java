@@ -18,5 +18,11 @@ public class QuantityMeasurementApp {
 		QuantityLength q6 = new QuantityLength(0.393701, LengthUnit.INCH);
 
 		System.out.println(q5.equals(q6));
+
+		System.out.println(QuantityLength.convert(1.0, LengthUnit.FEET, LengthUnit.INCH));
+		System.out.println(QuantityLength.convert(3.0, LengthUnit.YARD, LengthUnit.FEET));
+		System.out.println(QuantityLength.convert(36.0, LengthUnit.INCH, LengthUnit.YARD));
+		System.out.println(QuantityLength.convert(1.0, LengthUnit.CENTIMETER, LengthUnit.INCH));
+		System.out.println(QuantityLength.convert(0.0, LengthUnit.FEET, LengthUnit.INCH));
 	}
 }
