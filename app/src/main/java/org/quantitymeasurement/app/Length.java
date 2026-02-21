@@ -1,76 +1,56 @@
 package org.quantitymeasurement.app;
 
+
 public class Length {
     private static final double EPSILON = 0.0001;
     private final double value;
-    private final Unit unit;
-
-    public enum Unit {
-        FEET(12),
-        INCHES(1),
-        YARDS(36),
-        CENTIMETERS(0.393701);
-
-        private final double conversionFactorToInches;
-
-        Unit(double conversionFactorToInches) {
-            this.conversionFactorToInches = conversionFactorToInches;
-        }
-
-        public double toInches(double value) {
-            return value * conversionFactorToInches;
-        }
-
-        public double getConversionFactor() {
-            return conversionFactorToInches;
-        }
-    }
+    private final LengthUnit LengthUnit;
     
-    public Unit getUnit() {
-		return unit;
+    public LengthUnit getUnit() {
+		return LengthUnit;
 	}
 
     public double getValue() {
 		return value;
 	}
     
-    public Length(double value, Unit unit) {
-        if (unit == null) {
-            throw new IllegalArgumentException("Unit cannot be null");
+    public Length(double value, LengthUnit LengthUnit) {
+        if (LengthUnit == null) {
+            throw new IllegalArgumentException("LengthUnit cannot be null");
         }
         if (Double.isNaN(value) || Double.isInfinite(value)) {
             throw new IllegalArgumentException("Value must be a finite number");
         }
 
         this.value = value;
-        this.unit = unit;
+        this.LengthUnit = LengthUnit;
     }
 
     private double toInches() {
-        return unit.toInches(value);
+        return LengthUnit.toInches(value);
     }
 
-    public Length convertTo(Unit to) {
-        double inches = this.unit.toInches(value);
+    public Length convertTo(LengthUnit to) {
+        double inches = this.LengthUnit.toInches(value);
         return new Length(inches / to.getConversionFactor(),to);
     }
     
     public Length add(Length length2) {
-    	if (unit == null || length2 == null) {
-            throw new IllegalArgumentException("Unit cannot be null");
+    	if (LengthUnit == null || length2 == null) {
+            throw new IllegalArgumentException("LengthUnit cannot be null");
         }
-    	double totalValue = this.value + length2.convertTo(this.unit).value;
-    	Length sumLength = new Length(totalValue, this.unit);
+    	double totalValue = this.value + length2.convertTo(this.LengthUnit).value;
+    	Length sumLength = new Length(totalValue, this.LengthUnit);
     	return sumLength;
     }
     
-    public Length add(Length length2, Unit unit) {
-    	if (unit == null || length2 == null) {
-            throw new IllegalArgumentException("Unit cannot be null");
+    public Length add(Length length2, LengthUnit LengthUnit) {
+    	if (LengthUnit == null || length2 == null) {
+            throw new IllegalArgumentException("LengthUnit cannot be null");
         }
-    	double totalValue = this.value + length2.convertTo(this.unit).value;
-    	Length sumLength = new Length(totalValue, this.unit);
-    	return sumLength.convertTo(unit);
+    	double totalValue = this.value + length2.convertTo(this.LengthUnit).value;
+    	Length sumLength = new Length(totalValue, this.LengthUnit);
+    	return sumLength.convertTo(LengthUnit);
     }
 
     @Override
@@ -84,6 +64,6 @@ public class Length {
 
     @Override
     public String toString() {
-        return  value + ", " + unit;
+        return  value + ", " + LengthUnit;
     }
 }
