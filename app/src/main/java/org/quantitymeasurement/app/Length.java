@@ -25,6 +25,10 @@ public class Length {
             return conversionFactorToInches;
         }
     }
+    
+    public Unit getUnit() {
+		return unit;
+	}
 
     public double getValue() {
 		return value;

@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.quantitymeasurement.app.Length.Unit;
 
 public class QuantityMeasurementAppTest {
+	private final double EPSILON = 0.001;
+	
 	@Test
 	void testEquality_FeetToFeet_SameValue() {
 		Length q1 = new Length(1.0, Unit.FEET);
@@ -243,6 +245,121 @@ public class QuantityMeasurementAppTest {
 		Length l1 = new Length(0.001, Unit.FEET);
 		Length l2 = new Length(0.002, Unit.FEET);
 		assertEquals(new Length(0.003, Unit.FEET), l1.add(l2));
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_Feet() {
+		Length l1 = new Length(1.0, Unit.FEET);
+		Length l2 = new Length(12.0, Unit.INCHES);
+		assertEquals(new Length(2.0, Unit.FEET), l1.add(l2, Unit.FEET));
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_Inches() {
+		Length l1 = new Length(1.0, Unit.FEET);
+		Length l2 = new Length(12.0, Unit.INCHES);
+		assertEquals(new Length(24.0, Unit.INCHES), l1.add(l2, Unit.INCHES));
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_Yards() {
+		Length l1 = new Length(1.0, Unit.FEET);
+		Length l2 = new Length(12.0, Unit.INCHES);
+		Length result = l1.add(l2, Unit.YARDS);
+		assertEquals(0.667, result.getValue(),EPSILON);
+		assertEquals(Unit.YARDS, result.getUnit());
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_Centimeters() {
+		Length l1 = new Length(1.0, Unit.INCHES);
+		Length l2 = new Length(1.0, Unit.INCHES);
+		Length result = l1.add(l2, Unit.CENTIMETERS);
+		assertEquals(5.08, result.getValue(), EPSILON);
+		assertEquals(Unit.CENTIMETERS, result.getUnit());
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_SameAsFirstOperand() {
+		Length l1 = new Length(2.0, Unit.YARDS);
+		Length l2 = new Length(3.0, Unit.FEET);
+		assertEquals(new Length(3.0, Unit.YARDS), l1.add(l2, Unit.YARDS));
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_SameAsSecondOperand() {
+		Length l1 = new Length(2.0, Unit.YARDS);
+		Length l2 = new Length(3.0, Unit.FEET);
+		assertEquals(new Length(9.0, Unit.FEET), l1.add(l2, Unit.FEET));
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_Commutativity() {
+		Length l1 = new Length(1.0, Unit.FEET);
+		Length l2 = new Length(12.0, Unit.INCHES);
+		Length result1 = l1.add(l2, Unit.YARDS);
+		Length result2 = l2.add(l1, Unit.YARDS);
+		assertEquals(result1, result2);
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_WithZero() {
+		Length l1 = new Length(5.0, Unit.FEET);
+		Length l2 = new Length(0.0, Unit.INCHES);
+		assertEquals(1.667, l1.add(l2, Unit.YARDS).getValue(),EPSILON);
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_NegativeValues() {
+		Length l1 = new Length(5.0, Unit.FEET);
+		Length l2 = new Length(-2.0, Unit.FEET);
+		Length result = l1.add(l2, Unit.INCHES);
+		assertEquals(36.0, result.getValue());
+		assertEquals(Unit.INCHES, result.getUnit());
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_NullTargetUnit() {
+		Length l1 = new Length(1.0, Unit.FEET);
+		Length l2 = new Length(12.0, Unit.INCHES);
+		assertThrows(IllegalArgumentException.class, () -> l1.add(l2, null));
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_LargeToSmallScale() {
+		Length l1 = new Length(1000.0, Unit.FEET);
+		Length l2 = new Length(500.0, Unit.FEET);
+		assertEquals(18000.0, l1.add(l2, Unit.INCHES).getValue());
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_SmallToLargeScale() {
+		Length l1 = new Length(12.0, Unit.INCHES);
+		Length l2 = new Length(12.0, Unit.INCHES);
+		assertEquals(0.667, l1.add(l2, Unit.YARDS).getValue(), EPSILON);
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_AllUnitCombinations() {
+		Unit[] units = Unit.values();
+		for (Unit u1 : units) {
+			for (Unit u2 : units) {
+				for (Unit target : units) {
+					Length l1 = new Length(1.0, u1);
+					Length l2 = new Length(1.0, u2);
+					Length result = l1.add(l2, target);
+					double expected = l1.convertTo(target).getValue() + l2.convertTo(target).getValue();
+					assertEquals(expected, result.getValue(), EPSILON);
+				}
+			}
+		}
+	}
+
+	@Test
+	void testAddition_ExplicitTargetUnit_PrecisionTolerance() {
+		Length l1 = new Length(2.54, Unit.CENTIMETERS);
+		Length l2 = new Length(1.0, Unit.INCHES);
+		assertEquals(5.08, l1.add(l2, Unit.CENTIMETERS).getValue(),EPSILON);
 	}
 
 }
