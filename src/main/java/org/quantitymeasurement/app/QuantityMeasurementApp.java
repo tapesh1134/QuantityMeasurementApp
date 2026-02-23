@@ -44,27 +44,22 @@ public class QuantityMeasurementApp {
 
 		System.out.println(demonstrateLengthEquality(q1, q2));
 
-		Length q3 = new Length(1.0, LengthUnit.YARDS);
-		Length q4 = new Length(3.0, LengthUnit.FEET);
-
-		System.out.println(demonstrateLengthEquality(q3, q4));
-
-		Length q5 = new Length(1.0, LengthUnit.CENTIMETERS);
-		Length q6 = new Length(0.393701, LengthUnit.INCHES);
-
-		System.out.println(demonstrateLengthEquality(q5, q6));
-
 		System.out.println(demonstrateLengthConversion(1.0, LengthUnit.FEET, LengthUnit.INCHES));
 		System.out.println(demonstrateLengthConversion(3.0, LengthUnit.YARDS, LengthUnit.FEET));
-		System.out.println(demonstrateLengthConversion(36.0, LengthUnit.INCHES, LengthUnit.YARDS));
-		System.out.println(demonstrateLengthConversion(1.0, LengthUnit.CENTIMETERS, LengthUnit.INCHES));
-		System.out.println(demonstrateLengthConversion(0.0, LengthUnit.FEET, LengthUnit.INCHES));
 		
 		System.out.println(demonstrateLengthAddition(q1, q2, LengthUnit.FEET));
 		System.out.println(demonstrateLengthAddition(q2, q1, LengthUnit.FEET));
-		System.out.println(demonstrateLengthAddition(q3, q4));
-		System.out.println(demonstrateLengthAddition(q5, q6));
-		System.out.println(demonstrateLengthAddition(q5, q6, LengthUnit.INCHES));
+		
+		QuantityWeight w1 = new QuantityWeight(1.0, WeightUnit.KILOGRAM);
+		QuantityWeight w2 = new QuantityWeight(1000.0, WeightUnit.GRAM);
+
+		System.out.println(w1.equals(w2));
+
+		QuantityWeight converted = w1.convertTo(WeightUnit.POUND);
+		System.out.println(converted);
+
+		QuantityWeight sum = w1.add(w2);
+		System.out.println(sum);
 		
 	}
 }
