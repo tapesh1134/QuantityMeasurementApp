@@ -1,22 +1,21 @@
 package org.quantitymeasurement.app;
 
-public enum LengthUnit {
-    FEET(12),
-    INCHES(1),
-    YARDS(36),
-    CENTIMETERS(0.393701);
+public enum LengthUnit implements IMeasurable {
+	FEET(0.3048), INCHES(0.0254), YARDS(0.9144), CENTIMETERS(0.01);
 
-    private final double conversionFactorToInches;
+	private final double conversionFactor;
 
-    LengthUnit(double conversionFactorToInches) {
-        this.conversionFactorToInches = conversionFactorToInches;
-    }
+	LengthUnit(double conversionFactor) {
+		this.conversionFactor = conversionFactor;
+	}
 
-    public double toInches(double value) {
-        return value * conversionFactorToInches;
-    }
+	@Override
+	public double getConversionFactor() {
+		return conversionFactor;
+	}
 
-    public double getConversionFactor() {
-        return conversionFactorToInches;
-    }
+	@Override
+	public String getUnitName() {
+		return name();
+	}
 }

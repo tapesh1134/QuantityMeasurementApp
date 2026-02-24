@@ -1,0 +1,80 @@
+package org.quantitymeasurement.app;
+
+import java.util.Objects;
+
+public class Quantity<U extends IMeasurable> {
+
+    private final double value;
+    private final U unit;
+    private static final double EPSILON = 1e-9;
+
+    public Quantity(double value, U unit) {
+        if (unit == null) {
+            throw new IllegalArgumentException("Unit cannot be null");
+        }
+        if (!Double.isFinite(value)) {
+            throw new IllegalArgumentException("Value must be finite");
+        }
+
+        this.value = value;
+        this.unit = unit;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public U getUnit() {
+        return unit;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Quantity<?> that)) return false;
+
+        if (this.unit.getClass() != that.unit.getClass()) {
+            return false;
+        }
+
+        double thisBase = this.unit.convertToBaseUnit(this.value);
+        double thatBase = that.unit.convertToBaseUnit(that.value);
+
+        return Math.abs(thisBase - thatBase) < EPSILON;
+    }
+
+    public Quantity<U> convertTo(U targetUnit) {
+        double baseValue = unit.convertToBaseUnit(value);
+        double converted = targetUnit.convertFromBaseUnit(baseValue);
+
+        return new Quantity<>(round(converted), targetUnit);
+    }
+
+    public Quantity<U> add(Quantity<U> other) {
+        return add(other, this.unit);
+    }
+
+    public Quantity<U> add(Quantity<U> other, U targetUnit) {
+        double thisBase = unit.convertToBaseUnit(value);
+        double otherBase = other.unit.convertToBaseUnit(other.value);
+
+        double sumBase = thisBase + otherBase;
+        double result = targetUnit.convertFromBaseUnit(sumBase);
+
+        return new Quantity<>(round(result), targetUnit);
+    }
+    private double round(double value) {
+        return Math.round(value * 100.0) / 100.0;
+    }
+
+    @Override
+    public int hashCode() {
+        double baseValue = unit.convertToBaseUnit(value);
+        long normalized = Math.round(baseValue / EPSILON);
+        return Objects.hash(normalized, unit.getClass());
+    }
+
+    @Override
+    public String toString() {
+        return "Quantity(" + value + ", " + unit.getUnitName() + ")";
+    }
+}
