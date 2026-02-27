@@ -56,7 +56,6 @@ public class Quantity<U extends IMeasurable> {
     public Quantity<U> add(Quantity<U> other, U targetUnit) {
         double thisBase = unit.convertToBaseUnit(value);
         double otherBase = other.unit.convertToBaseUnit(other.value);
-
         double sumBase = thisBase + otherBase;
         double result = targetUnit.convertFromBaseUnit(sumBase);
 

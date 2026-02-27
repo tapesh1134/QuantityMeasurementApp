@@ -1,14 +1,14 @@
 package org.quantitymeasurement.app;
 
-public enum WeightUnit implements IMeasurable {
-	MILLIGRAM(0.001), GRAM(1.0), KILOGRAM(1000.0), POUND(453.592), TONNE(1000000);
+public enum VolumeUnit implements IMeasurable {
+	LITRE(1.0), MILLILITRE(0.001), GALLON(3.78541);
 
 	private final double conversionFactor;
-
-	WeightUnit(double conversionFactor) {
+	
+	VolumeUnit(double conversionFactor) {
 		this.conversionFactor = conversionFactor;
 	}
-
+	
 	@Override
 	public double getConversionFactor() {
 		return conversionFactor;
@@ -18,4 +18,5 @@ public enum WeightUnit implements IMeasurable {
 	public String getUnitName() {
 		return name();
 	}
+
 }

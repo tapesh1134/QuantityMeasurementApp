@@ -1,7 +1,7 @@
 package org.quantitymeasurement.app;
 
 public enum LengthUnit implements IMeasurable {
-	FEET(0.3048), INCHES(0.0254), YARDS(0.9144), CENTIMETERS(0.01);
+	FEET(12), INCHES(1), YARDS(36), CENTIMETERS(0.393701);
 
 	private final double conversionFactor;
 
