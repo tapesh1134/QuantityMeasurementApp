@@ -1,6 +1,13 @@
 package org.quantitymeasurement.app;
 
+@FunctionalInterface
+interface SupportArithmetic {
+	boolean isSupported();
+}
+
 public interface IMeasurable {
+	SupportArithmetic supportArithmetic = () -> true;
+
 	double getConversionFactor();
 
 	default double convertToBaseUnit(double value) {
@@ -12,4 +19,11 @@ public interface IMeasurable {
 	}
 
 	String getUnitName();
+
+	default boolean SupportsArithmetic() {
+		return supportArithmetic.isSupported();
+	}
+
+	default void validateOperationSupport(String operation) {
+	}
 }

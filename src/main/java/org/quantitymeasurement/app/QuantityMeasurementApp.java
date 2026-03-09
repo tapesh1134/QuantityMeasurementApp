@@ -82,5 +82,19 @@ public class QuantityMeasurementApp {
 		demonstrateDivision(new Quantity<>(12.0, LengthUnit.INCHES), new Quantity<>(1.0, LengthUnit.FEET));
 		demonstrateDivision(new Quantity<>(2000.0, WeightUnit.GRAM), new Quantity<>(1.0, WeightUnit.KILOGRAM));
 		demonstrateDivision(new Quantity<>(1000.0, VolumeUnit.MILLILITRE), new Quantity<>(1.0, VolumeUnit.LITRE));
+
+		
+		System.out.println("\n----- TEMPERATURE -----");
+		Quantity<TemperatureUnit> temp1 = new Quantity<>(0.0, TemperatureUnit.CELSIUS);
+		Quantity<TemperatureUnit> temp2 = new Quantity<>(32.0, TemperatureUnit.FAHRENHEIT);
+		System.out.println("0°C equals 32°F: " + temp1.equals(temp2));
+		Quantity<TemperatureUnit> celsius = new Quantity<>(100.0, TemperatureUnit.CELSIUS);
+		Quantity<TemperatureUnit> fahrenheit = celsius.convertTo(TemperatureUnit.FAHRENHEIT);
+		System.out.println("100°C = " + fahrenheit.getValue() + "°F");
+		try {
+			celsius.add(new Quantity<>(50.0, TemperatureUnit.CELSIUS));
+		} catch (UnsupportedOperationException e) {
+			System.out.println("Cannot add absolute temperatures: " + e.getMessage());
+		}
 	}
 }

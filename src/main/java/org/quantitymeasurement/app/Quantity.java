@@ -37,6 +37,8 @@ public class Quantity<U extends IMeasurable> {
 	    if (this.unit.getClass() != other.unit.getClass()) {
 	        throw new IllegalArgumentException("Cross-category operation not allowed");
 	    }
+	    this.unit.validateOperationSupport(operation.name());
+        other.unit.validateOperationSupport(operation.name());
 
 	    double thisBase = unit.convertToBaseUnit(value);
 	    double otherBase = other.unit.convertToBaseUnit(other.value);
@@ -114,6 +116,8 @@ public class Quantity<U extends IMeasurable> {
 	    if (this.unit.getClass() != other.unit.getClass()) {
 	        throw new IllegalArgumentException("Cross-category operation not allowed");
 	    }
+	    this.unit.validateOperationSupport("DIVIDE");
+	    other.unit.validateOperationSupport("DIVIDE");
 
 	    double thisBase = unit.convertToBaseUnit(value);
 	    double otherBase = other.unit.convertToBaseUnit(other.value);
