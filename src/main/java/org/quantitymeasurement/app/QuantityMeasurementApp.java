@@ -3,13 +3,13 @@ package org.quantitymeasurement.app;
 import org.quantitymeasurement.app.controller.QuantityController;
 import org.quantitymeasurement.app.dto.QuantityRequestDto;
 import org.quantitymeasurement.app.repository.IQuantityMeasurementRepository;
-import org.quantitymeasurement.app.repository.QuantityMeasurementCacheRepository;
+import org.quantitymeasurement.app.repository.QuantityMeasurementDatabaseRepository;
 import org.quantitymeasurement.app.service.QuantityServiceImpl;
 
 public class QuantityMeasurementApp {
 
 	public static void main(String[] args) {
-		IQuantityMeasurementRepository repository = QuantityMeasurementCacheRepository.getInstance();
+		IQuantityMeasurementRepository repository = QuantityMeasurementDatabaseRepository.getInstance();
 		QuantityServiceImpl service = new QuantityServiceImpl(repository);
 		QuantityController controller = new QuantityController(service);
 

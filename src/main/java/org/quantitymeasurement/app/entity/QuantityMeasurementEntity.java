@@ -9,18 +9,23 @@ public class QuantityMeasurementEntity implements Serializable {
 	public double thisValue;
 	public String thisUnit;
 	public String thisMeasurementType;
+
 	public double thatValue;
 	public String thatUnit;
 	public String thatMeasurementType;
+
 	public String operation;
+
 	public double resultValue;
 	public String resultUnit;
 	public String resultMeasurementType;
+
 	public String resultString;
+
 	public boolean isError;
 
 	public String errorMessage;
-	
+
 	private QuantityMeasurementEntity(Quantity<IMeasurable> thisQuantity, Quantity<IMeasurable> thatQuantity,
 			String operation) {
 
@@ -60,5 +65,9 @@ public class QuantityMeasurementEntity implements Serializable {
 
 		this.errorMessage = errorMessage;
 		this.isError = isError;
+	}
+
+	public QuantityMeasurementEntity() {
+
 	}
 }
