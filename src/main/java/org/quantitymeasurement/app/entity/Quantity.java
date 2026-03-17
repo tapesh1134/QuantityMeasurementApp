@@ -1,10 +1,10 @@
 
 package org.quantitymeasurement.app.entity;
 
+import org.quantitymeasurement.app.entity.units.TemperatureUnit;
+
 import java.util.Objects;
 import java.util.function.DoubleBinaryOperator;
-
-import org.quantitymeasurement.app.entity.units.TemperatureUnit;
 
 public final class Quantity<U extends IMeasurable> {
 
@@ -18,7 +18,7 @@ public final class Quantity<U extends IMeasurable> {
 
         private final DoubleBinaryOperator op;
         ArithmeticOperation(DoubleBinaryOperator op){ this.op=op; }
-        public double orgpute(double a,double b){ return op.applyAsDouble(a,b); }
+        public double compute(double a,double b){ return op.applyAsDouble(a,b); }
     }
 
     private final double value;
@@ -53,7 +53,7 @@ public final class Quantity<U extends IMeasurable> {
         this.unit.validateOperationSupport(op.name());
         that.unit.validateOperationSupport(op.name());
 
-        double resultBase = op.orgpute(this.toBase(),that.toBase());
+        double resultBase = op.compute(this.toBase(),that.toBase());
 
         double result;
         if (unit instanceof TemperatureUnit) {
@@ -91,7 +91,7 @@ public final class Quantity<U extends IMeasurable> {
         if (that == null) throw new IllegalArgumentException("Quantity cannot be null");
         this.unit.validateOperationSupport("DIVIDE");
         that.unit.validateOperationSupport("DIVIDE");
-        return round(ArithmeticOperation.DIVIDE.orgpute(this.toBase(),that.toBase()));
+        return round(ArithmeticOperation.DIVIDE.compute(this.toBase(),that.toBase()));
     }
 
     public Quantity<U> convertTo(U targetUnit){
@@ -118,7 +118,8 @@ public final class Quantity<U extends IMeasurable> {
     @Override
     public boolean equals(Object obj){
         if(this==obj) return true;
-        if(!(obj instanceof Quantity<?> that)) return false;
+        if(!(obj instanceof Quantity<?>)) return false;
+        Quantity<?> that = (Quantity<?>) obj;
         if(this.unit.getClass()!=that.unit.getClass()) return false;
         return Math.abs(this.toBase()-that.toBase()) < EPSILON;
     }

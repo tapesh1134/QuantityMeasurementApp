@@ -1,73 +1,99 @@
 package org.quantitymeasurement.app.entity;
 
-import java.io.Serializable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+import lombok.*;
 
-public class QuantityMeasurementEntity implements Serializable {
+@Entity
+@Table(name = "quantity_measurement_history")
 
-	private static final long serialVersionUID = 1L;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 
-	public double thisValue;
-	public String thisUnit;
-	public String thisMeasurementType;
+public class QuantityMeasurementEntity {
 
-	public double thatValue;
-	public String thatUnit;
-	public String thatMeasurementType;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-	public String operation;
+	private Double thisValue;
+	private String thisUnit;
+	private String thisMeasurementType;
 
-	public double resultValue;
-	public String resultUnit;
-	public String resultMeasurementType;
+	private Double thatValue;
+	private String thatUnit;
+	private String thatMeasurementType;
 
-	public String resultString;
+	private String operation;
 
-	public boolean isError;
+	private Double resultValue;
+	private String resultUnit;
+	private String resultMeasurementType;
 
-	public String errorMessage;
+	private String resultString;
 
-	private QuantityMeasurementEntity(Quantity<IMeasurable> thisQuantity, Quantity<IMeasurable> thatQuantity,
-			String operation) {
+	private Boolean isError;
+	private String errorMessage;
+
+
+    /* =========================================================
+       CUSTOM CONSTRUCTORS (KEEP YOUR LOGIC)
+       ========================================================= */
+
+	private QuantityMeasurementEntity(
+			Quantity<IMeasurable> thisQuantity,
+			Quantity<IMeasurable> thatQuantity,
+			String operation
+	) {
 
 		this.thisValue = thisQuantity.getValue();
 		this.thisUnit = thisQuantity.getUnit().getUnitName();
-		this.thisMeasurementType = thisQuantity.getUnit().getClass().getSimpleName();
+		this.thisMeasurementType =
+				thisQuantity.getUnit().getClass().getSimpleName();
 
 		this.thatValue = thatQuantity.getValue();
 		this.thatUnit = thatQuantity.getUnit().getUnitName();
-		this.thatMeasurementType = thatQuantity.getUnit().getClass().getSimpleName();
+		this.thatMeasurementType =
+				thatQuantity.getUnit().getClass().getSimpleName();
 
 		this.operation = operation;
 	}
 
-	public QuantityMeasurementEntity(Quantity<IMeasurable> thisQuantity, Quantity<IMeasurable> thatQuantity,
-			String operation, String result) {
-
+	public QuantityMeasurementEntity(
+			Quantity<IMeasurable> thisQuantity,
+			Quantity<IMeasurable> thatQuantity,
+			String operation,
+			String result
+	) {
 		this(thisQuantity, thatQuantity, operation);
-
 		this.resultString = result;
 	}
 
-	public QuantityMeasurementEntity(Quantity<IMeasurable> thisQuantity, Quantity<IMeasurable> thatQuantity,
-			String operation, Quantity<IMeasurable> result) {
-
+	public QuantityMeasurementEntity(
+			Quantity<IMeasurable> thisQuantity,
+			Quantity<IMeasurable> thatQuantity,
+			String operation,
+			Quantity<IMeasurable> result
+	) {
 		this(thisQuantity, thatQuantity, operation);
-
 		this.resultValue = result.getValue();
 		this.resultUnit = result.getUnit().getUnitName();
-		this.resultMeasurementType = result.getUnit().getClass().getSimpleName();
+		this.resultMeasurementType =
+				result.getUnit().getClass().getSimpleName();
 	}
 
-	public QuantityMeasurementEntity(Quantity<IMeasurable> thisQuantity, Quantity<IMeasurable> thatQuantity,
-			String operation, String errorMessage, boolean isError) {
-
+	public QuantityMeasurementEntity(
+			Quantity<IMeasurable> thisQuantity,
+			Quantity<IMeasurable> thatQuantity,
+			String operation,
+			String errorMessage,
+			boolean isError
+	) {
 		this(thisQuantity, thatQuantity, operation);
-
 		this.errorMessage = errorMessage;
 		this.isError = isError;
-	}
-
-	public QuantityMeasurementEntity() {
-
 	}
 }

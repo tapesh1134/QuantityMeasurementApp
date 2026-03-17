@@ -1,138 +1,142 @@
-
 package org.quantitymeasurement.app.controller;
 
 import org.quantitymeasurement.app.dto.QuantityRequestDto;
 import org.quantitymeasurement.app.dto.QuantityResponseDto;
+import org.quantitymeasurement.app.dto.TwoQuantityRequestDto;
 import org.quantitymeasurement.app.entity.IMeasurable;
 import org.quantitymeasurement.app.entity.Quantity;
-import org.quantitymeasurement.app.entity.units.LengthUnit;
-import org.quantitymeasurement.app.entity.units.TemperatureUnit;
-import org.quantitymeasurement.app.entity.units.VolumeUnit;
-import org.quantitymeasurement.app.entity.units.WeightUnit;
+import org.quantitymeasurement.app.entity.units.*;
 import org.quantitymeasurement.app.service.QuantityService;
+import org.springframework.web.bind.annotation.*;
 
+@RestController
+@RequestMapping("/quantity")
 public class QuantityController {
-	private QuantityService quantityService;
+
+	private final QuantityService quantityService;
 
 	public QuantityController(QuantityService quantityService) {
 		this.quantityService = quantityService;
 	}
 
+    /* =========================================================
+       UNIT RESOLVER
+       ========================================================= */
+
 	private IMeasurable resolveUnit(String unit) {
 
-		try {
-			return LengthUnit.valueOf(unit);
-		} catch (Exception ignored) {
-		}
-		try {
-			return WeightUnit.valueOf(unit);
-		} catch (Exception ignored) {
-		}
-		try {
-			return VolumeUnit.valueOf(unit);
-		} catch (Exception ignored) {
-		}
-		try {
-			return TemperatureUnit.valueOf(unit);
-		} catch (Exception ignored) {
-		}
+		try { return LengthUnit.valueOf(unit); } catch (Exception ignored) {}
+		try { return WeightUnit.valueOf(unit); } catch (Exception ignored) {}
+		try { return VolumeUnit.valueOf(unit); } catch (Exception ignored) {}
+		try { return TemperatureUnit.valueOf(unit); } catch (Exception ignored) {}
 
 		throw new IllegalArgumentException("Unknown unit: " + unit);
 	}
 
-	public String checkEquality(QuantityRequestDto q1, QuantityRequestDto q2) {
+    /* =========================================================
+       EQUALITY
+       ========================================================= */
 
-		IMeasurable unit1 = resolveUnit(q1.getUnit());
-		IMeasurable unit2 = resolveUnit(q2.getUnit());
+	@PostMapping("/equality")
+	public String checkEquality(@RequestBody TwoQuantityRequestDto request) {
 
-		Quantity<IMeasurable> left = new Quantity<>(q1.getValue(), unit1);
-		Quantity<IMeasurable> right = new Quantity<>(q2.getValue(), unit2);
+		QuantityRequestDto q1 = request.getQ1();
+		QuantityRequestDto q2 = request.getQ2();
 
-		boolean result = left.equals(right);
+		Quantity<IMeasurable> left =
+				new Quantity<>(q1.getValue(), resolveUnit(q1.getUnit()));
 
-		return left + " equals " + right + " → " + result;
+		Quantity<IMeasurable> right =
+				new Quantity<>(q2.getValue(), resolveUnit(q2.getUnit()));
+
+		return left + " equals " + right + " → " + left.equals(right);
 	}
 
-	/*
-	 * ========================================================= CONVERSION
-	 * =========================================================
-	 */
+    /* =========================================================
+       CONVERSION
+       ========================================================= */
 
-	public QuantityResponseDto convert(QuantityRequestDto req, String targetUnit) {
+	@PostMapping("/convert")
+	public QuantityResponseDto convert(
+			@RequestBody QuantityRequestDto req,
+			@RequestParam String targetUnit) {
 
-		IMeasurable source = resolveUnit(req.getUnit());
-		IMeasurable target = resolveUnit(targetUnit);
+		Quantity<IMeasurable> quantity =
+				new Quantity<>(req.getValue(), resolveUnit(req.getUnit()));
 
-		Quantity<IMeasurable> quantity = new Quantity<>(req.getValue(), source);
-
-		Quantity<IMeasurable> result = quantityService.convert(quantity, target);
+		Quantity<IMeasurable> result =
+				quantityService.convert(quantity, resolveUnit(targetUnit));
 
 		return new QuantityResponseDto(result.toString(), result.getValue());
 	}
 
-	public QuantityResponseDto add(QuantityRequestDto q1, QuantityRequestDto q2, String targetUnit) {
+    /* =========================================================
+       ADDITION
+       ========================================================= */
 
-		IMeasurable unit1 = resolveUnit(q1.getUnit());
-		IMeasurable unit2 = resolveUnit(q2.getUnit());
-		IMeasurable target = resolveUnit(targetUnit);
+	@PostMapping("/add")
+	public QuantityResponseDto add(
+			@RequestBody TwoQuantityRequestDto request,
+			@RequestParam(required = false) String targetUnit) {
 
-		Quantity<IMeasurable> left = new Quantity<>(q1.getValue(), unit1);
-		Quantity<IMeasurable> right = new Quantity<>(q2.getValue(), unit2);
+		QuantityRequestDto q1 = request.getQ1();
+		QuantityRequestDto q2 = request.getQ2();
 
-		Quantity<IMeasurable> result = quantityService.add(left, right, target);
+		Quantity<IMeasurable> left =
+				new Quantity<>(q1.getValue(), resolveUnit(q1.getUnit()));
 
-		return new QuantityResponseDto(result.toString(), result.getValue());
-	}
+		Quantity<IMeasurable> right =
+				new Quantity<>(q2.getValue(), resolveUnit(q2.getUnit()));
 
-	public QuantityResponseDto add(QuantityRequestDto q1, QuantityRequestDto q2) {
-
-		IMeasurable unit1 = resolveUnit(q1.getUnit());
-		IMeasurable unit2 = resolveUnit(q2.getUnit());
-
-		Quantity<IMeasurable> left = new Quantity<>(q1.getValue(), unit1);
-
-		Quantity<IMeasurable> right = new Quantity<>(q2.getValue(), unit2);
-
-		Quantity<IMeasurable> result = quantityService.add(left, right);
+		Quantity<IMeasurable> result =
+				(targetUnit != null)
+						? quantityService.add(left, right, resolveUnit(targetUnit))
+						: quantityService.add(left, right);
 
 		return new QuantityResponseDto(result.toString(), result.getValue());
 	}
 
-	public QuantityResponseDto subtract(QuantityRequestDto q1, QuantityRequestDto q2, String targetUnit) {
+    /* =========================================================
+       SUBTRACTION
+       ========================================================= */
 
-		IMeasurable unit1 = resolveUnit(q1.getUnit());
-		IMeasurable unit2 = resolveUnit(q2.getUnit());
-		IMeasurable target = resolveUnit(targetUnit);
+	@PostMapping("/subtract")
+	public QuantityResponseDto subtract(
+			@RequestBody TwoQuantityRequestDto request,
+			@RequestParam(required = false) String targetUnit) {
 
-		Quantity<IMeasurable> left = new Quantity<>(q1.getValue(), unit1);
-		Quantity<IMeasurable> right = new Quantity<>(q2.getValue(), unit2);
+		QuantityRequestDto q1 = request.getQ1();
+		QuantityRequestDto q2 = request.getQ2();
 
-		Quantity<IMeasurable> result = quantityService.subtract(left, right, target);
+		Quantity<IMeasurable> left =
+				new Quantity<>(q1.getValue(), resolveUnit(q1.getUnit()));
 
-		return new QuantityResponseDto(result.toString(), result.getValue());
-	}
+		Quantity<IMeasurable> right =
+				new Quantity<>(q2.getValue(), resolveUnit(q2.getUnit()));
 
-	public QuantityResponseDto subtract(QuantityRequestDto q1, QuantityRequestDto q2) {
-
-		IMeasurable unit1 = resolveUnit(q1.getUnit());
-		IMeasurable unit2 = resolveUnit(q2.getUnit());
-
-		Quantity<IMeasurable> left = new Quantity<>(q1.getValue(), unit1);
-
-		Quantity<IMeasurable> right = new Quantity<>(q2.getValue(), unit2);
-
-		Quantity<IMeasurable> result = quantityService.subtract(left, right);
+		Quantity<IMeasurable> result =
+				(targetUnit != null)
+						? quantityService.subtract(left, right, resolveUnit(targetUnit))
+						: quantityService.subtract(left, right);
 
 		return new QuantityResponseDto(result.toString(), result.getValue());
 	}
 
-	public double divide(QuantityRequestDto q1, QuantityRequestDto q2) {
+    /* =========================================================
+       DIVISION
+       ========================================================= */
 
-		IMeasurable unit1 = resolveUnit(q1.getUnit());
-		IMeasurable unit2 = resolveUnit(q2.getUnit());
+	@PostMapping("/divide")
+	public double divide(@RequestBody TwoQuantityRequestDto request) {
 
-		Quantity<IMeasurable> left = new Quantity<>(q1.getValue(), unit1);
-		Quantity<IMeasurable> right = new Quantity<>(q2.getValue(), unit2);
+		QuantityRequestDto q1 = request.getQ1();
+		QuantityRequestDto q2 = request.getQ2();
+
+		Quantity<IMeasurable> left =
+				new Quantity<>(q1.getValue(), resolveUnit(q1.getUnit()));
+
+		Quantity<IMeasurable> right =
+				new Quantity<>(q2.getValue(), resolveUnit(q2.getUnit()));
 
 		return quantityService.divide(left, right);
 	}
