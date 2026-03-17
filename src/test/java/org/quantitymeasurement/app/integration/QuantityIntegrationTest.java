@@ -6,12 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.quantitymeasurement.app.controller.QuantityController;
 import org.quantitymeasurement.app.dto.QuantityRequestDto;
+import org.quantitymeasurement.app.repository.QuantityMeasurementCacheRepository;
 import org.quantitymeasurement.app.service.QuantityServiceImpl;
 
 class QuantityIntegrationTest {
 
-    QuantityController controller =
-            new QuantityController(new QuantityServiceImpl());
+	QuantityController controller = new QuantityController(
+			new QuantityServiceImpl(QuantityMeasurementCacheRepository.getInstance()));
 
     /* =========================================================
        CONVERSION FLOW
