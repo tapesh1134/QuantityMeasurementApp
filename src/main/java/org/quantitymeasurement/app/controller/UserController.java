@@ -26,14 +26,15 @@ public class UserController {
         this.jwtService = jwtService;
     }
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<User> register(@RequestBody RegisterDto registerDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.register(registerDto));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto){
-        String Token = jwtService.generateToken(userService.login(loginDto));
-        return ResponseEntity.ok() .header( "Set-Cookie", String.format( "jwt=%s; Path=/; Max-Age=%d; HttpOnly; SameSite=None", Token, tokenExpiry)).body("login was successful.");
+    @PostMapping("/auth/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
+        User user = userService.login(loginDto);
+        String Token = jwtService.generateToken(user);
+        return ResponseEntity.ok() .header( "Set-Cookie", String.format( "jwt=%s; Path=/; Max-Age=%d; HttpOnly; SameSite=None", Token, tokenExpiry ) ) .body("login was successful.");
     }
 }

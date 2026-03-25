@@ -5,8 +5,13 @@ import org.quantitymeasurement.app.dto.LoginDto;
 import org.quantitymeasurement.app.dto.RegisterDto;
 import org.quantitymeasurement.app.entity.User;
 import org.quantitymeasurement.app.repository.UserRepository;
+import org.quantitymeasurement.app.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,13 +20,15 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private UserRepository userRepository;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder){
+    public UserServiceImpl(AuthenticationManager authenticationManager,UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder){
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
@@ -36,11 +43,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(LoginDto loginDto) {
-        Optional<User> user = userRepository.findByEmail(loginDto.getEmail());
-        if(user.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found");
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
+        if(authentication.isAuthenticated()){
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            User user = userDetails.getUser();
+            return user;
+        }else{
+            throw new BadCredentialsException("Bad credentials");
         }
-        return user.get();
     }
 
     @Override

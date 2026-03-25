@@ -7,6 +7,7 @@ import org.quantitymeasurement.app.entity.IMeasurable;
 import org.quantitymeasurement.app.entity.Quantity;
 import org.quantitymeasurement.app.entity.units.*;
 import org.quantitymeasurement.app.service.QuantityService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,6 +32,11 @@ public class QuantityController {
 		try { return TemperatureUnit.valueOf(unit); } catch (Exception ignored) {}
 
 		throw new IllegalArgumentException("Unknown unit: " + unit);
+	}
+
+	@GetMapping
+	public ResponseEntity<?> welcome(){
+		return ResponseEntity.status(200).body("Welcome to the quantity measurement you are authorized");
 	}
 
     /* =========================================================
