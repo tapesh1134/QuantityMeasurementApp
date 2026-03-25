@@ -66,21 +66,35 @@ public final class Quantity<U extends IMeasurable> {
         return out;
     }
 
-    public Quantity<U> add(Quantity<U> that){ return operate(that,ArithmeticOperation.ADD); }
+    public Quantity<U> add(Quantity<U> that){
+        if(this.unit.getClass() != that.unit.getClass()) {
+            throw new IllegalArgumentException("Operand's unit is not same");
+        }
+        return operate(that,ArithmeticOperation.ADD);
+    }
     public Quantity<U> add(Quantity<U> that, U targetUnit) {
 
         if (targetUnit == null)
             throw new IllegalArgumentException("Target unit cannot be null");
 
+        if(this.unit.getClass()!=targetUnit.getClass()) throw new IllegalArgumentException("Target unit is not same");
+
         Quantity<U> result = this.add(that);
 
         return result.convertTo(targetUnit);
     }
-    public Quantity<U> subtract(Quantity<U> that){ return operate(that,ArithmeticOperation.SUBTRACT); }
+    public Quantity<U> subtract(Quantity<U> that){
+        if(this.unit.getClass() != that.unit.getClass()) {
+            throw new IllegalArgumentException("Operand's unit is not same");
+        }
+        return operate(that,ArithmeticOperation.SUBTRACT);
+    }
     public Quantity<U> subtract(Quantity<U> that, U targetUnit) {
 
         if (targetUnit == null)
             throw new IllegalArgumentException("Target unit cannot be null");
+
+        if(this.unit.getClass()!=targetUnit.getClass()) throw new IllegalArgumentException("Target unit is not same");
 
         Quantity<U> result = this.subtract(that);
 
@@ -89,6 +103,9 @@ public final class Quantity<U extends IMeasurable> {
 
     public double divide(Quantity<U> that){
         if (that == null) throw new IllegalArgumentException("Quantity cannot be null");
+        if(this.unit.getClass() != that.unit.getClass()) {
+            throw new IllegalArgumentException("Operand's unit is not same");
+        }
         this.unit.validateOperationSupport("DIVIDE");
         that.unit.validateOperationSupport("DIVIDE");
         return round(ArithmeticOperation.DIVIDE.compute(this.toBase(),that.toBase()));
@@ -96,6 +113,8 @@ public final class Quantity<U extends IMeasurable> {
 
     public Quantity<U> convertTo(U targetUnit){
         if(targetUnit==null) throw new IllegalArgumentException("Target unit cannot be null");
+
+        if(this.unit.getClass()!=targetUnit.getClass()) throw new IllegalArgumentException("Target unit is not same");
 
         if (this.unit instanceof TemperatureUnit && targetUnit instanceof TemperatureUnit) {
             TemperatureUnit src = (TemperatureUnit) this.unit;

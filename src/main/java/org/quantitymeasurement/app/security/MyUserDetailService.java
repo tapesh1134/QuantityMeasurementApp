@@ -1,13 +1,14 @@
-package org.quantitymeasurement.app.service;
+package org.quantitymeasurement.app.security;
 
 import org.quantitymeasurement.app.entity.User;
 import org.quantitymeasurement.app.repository.UserRepository;
-import org.quantitymeasurement.app.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class MyUserDetailService implements UserDetailsService {
@@ -21,10 +22,7 @@ public class MyUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with email: " + email)
-                );
+        User user = userRepository.findByEmail(email).orElseThrow(()->new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Credentials"));
 
         return new CustomUserDetails(user);
     }

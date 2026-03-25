@@ -22,13 +22,15 @@ public class User {
     private Long id;
     @Column(nullable = false,length = 20)
     private String firstName;
-    @Column(nullable = false,length = 20)
+    @Column(nullable = true,length = 20)
     private String lastName;
     @Column(nullable = false,unique = true,length = 150)
     private String email;
-    @Column(nullable = false)
+    @Column(nullable = true)
     @JsonIgnore
     private String password;
+    @Column(nullable = false)
+    private String provider;
     @JsonIgnore
     @Column(nullable = false, updatable = false)
     private LocalDateTime createAt;
