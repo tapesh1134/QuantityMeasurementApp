@@ -32,10 +32,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 1️⃣ Skip public routes
         String path = request.getRequestURI();
-        if (path.startsWith("/api/auth")|| path.startsWith("/api/oauth2") || path.startsWith("/api/public")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        if (path.startsWith("/api/auth")|| path.startsWith("/api/oauth2") || path.startsWith("/api/public")) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
 
         // 2️⃣ Extract JWT from cookie
         String token = extractJwtFromCookies(request);

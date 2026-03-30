@@ -1,8 +1,11 @@
 package org.quantitymeasurement.app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "quantity_measurement_history")
@@ -18,6 +21,8 @@ public class QuantityMeasurementEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@JsonIgnore
+	private Long userId;
 
 	private Double thisValue;
 	private String thisUnit;
@@ -37,18 +42,21 @@ public class QuantityMeasurementEntity {
 
 	private Boolean isError;
 	private String errorMessage;
+	@Column(name = "timeStamp", nullable = false, updatable = false)
+	private LocalDateTime timestamp;
 
-
-    /* =========================================================
-       CUSTOM CONSTRUCTORS (KEEP YOUR LOGIC)
-       ========================================================= */
+	@PrePersist
+	protected void onCreate() {
+		this.timestamp = LocalDateTime.now();
+	}
 
 	private QuantityMeasurementEntity(
+			Long userId,
 			Quantity<IMeasurable> thisQuantity,
 			Quantity<IMeasurable> thatQuantity,
 			String operation
 	) {
-
+		this.userId = userId;
 		this.thisValue = thisQuantity.getValue();
 		this.thisUnit = thisQuantity.getUnit().getUnitName();
 		this.thisMeasurementType =
@@ -62,37 +70,64 @@ public class QuantityMeasurementEntity {
 		this.operation = operation;
 	}
 
-	public QuantityMeasurementEntity(
+	private QuantityMeasurementEntity(
+			Long userId,
 			Quantity<IMeasurable> thisQuantity,
-			Quantity<IMeasurable> thatQuantity,
-			String operation,
-			String result
+			String operation
 	) {
-		this(thisQuantity, thatQuantity, operation);
+		this.userId = userId;
+		this.thisValue = thisQuantity.getValue();
+		this.thisUnit = thisQuantity.getUnit().getUnitName();
+		this.thisMeasurementType =
+				thisQuantity.getUnit().getClass().getSimpleName();
+		this.operation = operation;
+	}
+
+	public QuantityMeasurementEntity(Long userId,
+	                                 Quantity<IMeasurable> thisQuantity,
+	                                 Quantity<IMeasurable> thatQuantity,
+	                                 String operation,
+	                                 String result
+	) {
+		this(userId,thisQuantity, thatQuantity, operation);
 		this.resultString = result;
 	}
 
-	public QuantityMeasurementEntity(
-			Quantity<IMeasurable> thisQuantity,
-			Quantity<IMeasurable> thatQuantity,
-			String operation,
-			Quantity<IMeasurable> result
+	public QuantityMeasurementEntity(Long userId,
+	                                 Quantity<IMeasurable> thisQuantity,
+	                                 Quantity<IMeasurable> thatQuantity,
+	                                 String operation,
+	                                 Quantity<IMeasurable> result
 	) {
-		this(thisQuantity, thatQuantity, operation);
+		this(userId ,thisQuantity, thatQuantity, operation);
 		this.resultValue = result.getValue();
 		this.resultUnit = result.getUnit().getUnitName();
 		this.resultMeasurementType =
 				result.getUnit().getClass().getSimpleName();
+		this.resultString = result.toString();
 	}
 
-	public QuantityMeasurementEntity(
-			Quantity<IMeasurable> thisQuantity,
-			Quantity<IMeasurable> thatQuantity,
-			String operation,
-			String errorMessage,
-			boolean isError
+	public QuantityMeasurementEntity(Long userId,
+	                                 Quantity<IMeasurable> thisQuantity,
+	                                 String operation,
+	                                 Quantity<IMeasurable> result
 	) {
-		this(thisQuantity, thatQuantity, operation);
+		this(userId,thisQuantity, operation);
+		this.resultValue = result.getValue();
+		this.resultUnit = result.getUnit().getUnitName();
+		this.resultMeasurementType =
+				result.getUnit().getClass().getSimpleName();
+		this.resultString = result.toString();
+	}
+
+	public QuantityMeasurementEntity(Long userId,
+	                                 Quantity<IMeasurable> thisQuantity,
+	                                 Quantity<IMeasurable> thatQuantity,
+	                                 String operation,
+	                                 String errorMessage,
+	                                 boolean isError
+	) {
+		this(userId,thisQuantity, thatQuantity, operation);
 		this.errorMessage = errorMessage;
 		this.isError = isError;
 	}

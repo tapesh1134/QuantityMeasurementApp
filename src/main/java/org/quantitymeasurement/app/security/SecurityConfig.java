@@ -47,11 +47,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         // Open routes
-                        .requestMatchers("/public/**").permitAll()
-                        .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers("/api/quantity/**").authenticated()
 
                         // Everything else requires auth
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
 
                 // Return 401 instead of redirect

@@ -9,40 +9,49 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-
-@Data
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Builder
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false,length = 20)
+
+    @Column(nullable = true, length = 20)
     private String firstName;
-    @Column(nullable = true,length = 20)
+
+    @Column(nullable = true, length = 20)
     private String lastName;
-    @Column(nullable = false,unique = true,length = 150)
+
+    @Column(unique = true, nullable = false, length = 150)
     private String email;
+
     @Column(nullable = true)
     @JsonIgnore
     private String password;
+
     @Column(nullable = false)
-    private String provider;
+    private String provider; // LOCAL / GOOGLE
+
     @JsonIgnore
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
+
     @JsonIgnore
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
+
     @PrePersist
-    protected void onCreate(){
-        this.createAt = LocalDateTime.now();
-        this.updateAt = LocalDateTime.now();
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
+
     @PreUpdate
-    protected  void onUpdate(){
-        this.updateAt = LocalDateTime.now();
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
