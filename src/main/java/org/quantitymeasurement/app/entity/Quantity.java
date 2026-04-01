@@ -44,7 +44,7 @@ public final class Quantity<U extends IMeasurable> {
     }
 
     private double round(double v){
-        return Math.round(v*100.0)/100.0;
+        return Math.round(v*1000000000.0)/1000000000.0;
     }
 
     private Quantity<U> operate(Quantity<U> that,ArithmeticOperation op){

@@ -1,5 +1,6 @@
 package org.quantitymeasurement.app.exception;
 
+import org.quantitymeasurement.app.dto.ApiResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,17 +12,17 @@ import org.springframework.web.server.ResponseStatusException;
 public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex){
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseDto<>(false, ex.getMessage()));
     }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> handleResponseStatusException(ResponseStatusException ex) {
-        return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
+        return ResponseEntity.status(ex.getStatusCode()).body(new ApiResponseDto<>(false,ex.getReason()));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleBadCredentialsException(BadCredentialsException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseDto<>(false,e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
@@ -34,6 +35,6 @@ public class GlobalExceptionHandler {
                     .status(rse.getStatusCode())
                     .body(rse.getReason());
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponseDto<>(false,ex.getMessage()));
     }
 }
