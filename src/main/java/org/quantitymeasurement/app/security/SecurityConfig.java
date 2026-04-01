@@ -46,8 +46,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
 
-                        // Open routes
-                        .requestMatchers("/api/quantity/**").authenticated()
+                        // Open routes  
+                        .requestMatchers("/api/quantities/history").authenticated()
 
                         // Everything else requires auth
                         .anyRequest().permitAll()
