@@ -36,7 +36,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
-        // 🔹 Extract data from OAuth (Google)
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
 
@@ -44,11 +43,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             throw new RuntimeException("Email not found from OAuth provider");
         }
 
-        // 🔹 Find existing user
         User user = userRepository.findByEmail(email).orElse(null);
 
         if (user == null) {
-            // 🔹 Split name safely
             String firstName = "";
             String lastName = "";
 
@@ -60,7 +57,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 }
             }
 
-            // 🔹 Create new OAuth user
             user = User.builder()
                     .email(email)
                     .firstName(firstName)
@@ -71,7 +67,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
             userRepository.save(user);
         }
-        //  Generate JWT
         String token = jwtService.generateToken(user);
 
         response.addHeader(
@@ -83,7 +78,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 )
         );
 
-        //  Redirect
         getRedirectStrategy().sendRedirect(
                 request,
                 response,
